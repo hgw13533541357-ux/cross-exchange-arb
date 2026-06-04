@@ -1,0 +1,24 @@
+name: Cross-Exchange Arb Bot
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'  # 每15分钟扫描一次
+  workflow_dispatch:
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r requirements.txt
+      - name: Run arb scan
+        env:
+          GATE_API_KEY: ${{ secrets.GATE_API_KEY }}
+          GATE_API_SECRET: ${{ secrets.GATE_API_SECRET }}
+          MIN_PROFIT: "0.3"
+          TRADE_USDT: "10"
+          DRY_RUN: "true"
+        run: python bot.py
